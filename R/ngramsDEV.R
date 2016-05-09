@@ -1,3 +1,4 @@
+
 #' Create ngrams and skipgrams using potentially faster R method
 #' 
 #' Create a set of ngrams (tokens in sequence) from character vectors or
@@ -50,6 +51,17 @@ ngramsNew <- function(x, ...) {
 
 #' @rdname ngramsNew
 #' @importFrom stats complete.cases
+#' @examples 
+#' \dontrun{
+#' # performance benchmarking
+#' toks <- tokenize(inaugTexts, removePunct = TRUE)
+#' rbenchmark::benchmark(new = ngramsNew(toks, n = 1:4),
+#'                       old = ngrams(toks, n = 1:4),
+#'                       replications = 2)
+#' ##   test replications elapsed relative user.self sys.self user.child sys.child
+#' ## 1  new            2   0.499    1.000     0.494    0.006      0.000     0.000
+#' ## 2  old            2  76.589  153.485    67.438    8.899      0.022     0.038
+#' }
 #' @export
 ngramsNew.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
     if (any(stringi::stri_detect_fixed(x, " ")) & concatenator != " ")
