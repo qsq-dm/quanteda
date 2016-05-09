@@ -70,6 +70,7 @@ Collate:
     'kwic.R'
     'lexdiv.R'
     'ngrams.R'
+    'ngramsDEV.R'
     'phrases.R'
     'plots.R'
     'quanteda-package.R'
