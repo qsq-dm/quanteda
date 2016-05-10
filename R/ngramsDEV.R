@@ -55,12 +55,44 @@ ngramsNew <- function(x, ...) {
 #' \dontrun{
 #' # performance benchmarking
 #' toks <- tokenize(inaugTexts, removePunct = TRUE)
-#' rbenchmark::benchmark(new = ngramsNew(toks, n = 1:4),
-#'                       old = ngrams(toks, n = 1:4),
-#'                       replications = 2)
-#' ##   test replications elapsed relative user.self sys.self user.child sys.child
-#' ## 1  new            2   0.499    1.000     0.494    0.006      0.000     0.000
-#' ## 2  old            2  76.589  153.485    67.438    8.899      0.022     0.038
+#' library(data.table)
+#' 
+#' benches = data.table()
+#' for (n_start in 1:3) {
+#' for (n_end in (n_start):3) {
+#' for (skip_start in 0:0) {
+#' for (skip_end in (skip_start):0) {
+#'                        print(paste(list(n_start, n_end, skip_start, skip_end)))
+#'                        n <- n_start:n_end
+#'                        skip <- skip_start:skip_end
+#'                        b <- rbenchmark::benchmark(
+#'                                               old <- ngrams(toks, n = n, skip=skip),
+#'                                               new <- ngramsNew(toks, n = n, skip=skip),
+#'                                               replications = 2
+#'                        )
+#'                        b$n_start <- c(n_start,n_start)
+#'                        b$n_end <- c(n_end,n_end)
+#'                        b$skip_start <- c(skip_start,skip_start)
+#'                        b$skip_end <- c(skip_end,skip_end)
+#'                        #  Compare set differences in case the order is different
+#'                        b$same <- setequal(old[[1]],new[[1]])
+#'                        print(b)
+#'                        benches <- rbind(benches, b)
+#' }}}}
+#' 
+#'                                           test replications elapsed relative user.self sys.self user.child sys.child n_start n_end skip_start skip_end same
+#'  1: new <- ngramsNew(toks, n = n, skip = skip)            2   0.001    1.000     0.002    0.000          0         0       1     1          0        0 TRUE
+#'  2:    old <- ngrams(toks, n = n, skip = skip)            2   0.019   19.000     0.019    0.001          0         0       1     1          0        0 TRUE
+#'  3: new <- ngramsNew(toks, n = n, skip = skip)            2   0.003    1.000     0.003    0.000          0         0       1     2          0        0 TRUE
+#'  4:    old <- ngrams(toks, n = n, skip = skip)            2   0.086   28.667     0.083    0.004          0         0       1     2          0        0 TRUE
+#'  5: new <- ngramsNew(toks, n = n, skip = skip)            2   0.004    1.000     0.004    0.000          0         0       1     3          0        0 TRUE
+#'  6:    old <- ngrams(toks, n = n, skip = skip)            2   0.213   53.250     0.189    0.024          0         0       1     3          0        0 TRUE
+#'  7: new <- ngramsNew(toks, n = n, skip = skip)            2   0.002    1.000     0.002    0.000          0         0       2     2          0        0 TRUE
+#'  8:    old <- ngrams(toks, n = n, skip = skip)            2   0.021   10.500     0.021    0.000          0         0       2     2          0        0 TRUE
+#'  9: new <- ngramsNew(toks, n = n, skip = skip)            2   0.004    1.000     0.004    0.000          0         0       2     3          0        0 TRUE
+#' 10:    old <- ngrams(toks, n = n, skip = skip)            2   0.092   23.000     0.087    0.005          0         0       2     3          0        0 TRUE
+#' 11: new <- ngramsNew(toks, n = n, skip = skip)            2   0.002    1.000     0.002    0.000          0         0       3     3          0        0 TRUE
+#' 12:    old <- ngrams(toks, n = n, skip = skip)            2   0.023   11.500     0.022    0.000          0         0       3     3          0        0 TRUE
 #' }
 #' @export
 ngramsNew.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
@@ -75,17 +107,23 @@ ngramsNew.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
 
     ngram_result <- c()
     for (current_n in n) {
-        offset_tokens <- list(x[1:(length(x) - (current_n-1) - skip)])
-        for (i in 2:current_n)
-            ix <- seq(from=i+skip, length.out=length(offset_tokens[[1]]))
-            offset_tokens <- c(
-              offset_tokens, 
-               list(x[ix])
-            )
-        ngram_result <- c(
-          ngram_result, 
-          do.call("paste", c(offset_tokens, sep = concatenator))
-        )
+      for (s in skip) {
+        s <- ifelse(current_n==1, 0, s)
+        offset_tokens <- list()
+          for (i in 1:current_n) {
+              start <- ifelse(i==1, 1, i+s)
+              length.out <- length(x) - (current_n-1) - s
+              ix <- seq(from=start, length.out=length.out)
+              offset_tokens <- c(
+                offset_tokens, 
+                 list(x[ix])
+              )
+          }
+          ngram_result <- c(
+            ngram_result, 
+            do.call("paste", c(offset_tokens, sep = concatenator))
+          )
+      }
     }
     ngram_result
 }
