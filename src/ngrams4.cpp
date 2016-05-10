@@ -156,3 +156,61 @@ List bigram_selective_cppl(SEXP x,
   }
   return texts_temp;
 }
+
+
+// [[Rcpp::export]]
+List bigram_selective_cppl2(SEXP x,
+                           const vector<string> &types,
+                           const vector<int> &skips, 
+                           const string &delim,
+                           const bool &remove
+) {
+  
+  List texts(x);
+  List texts_temp(texts.size());
+  std::unordered_set<std::string> set_types (types.begin(), types.end());
+  for (int h = 0; h < texts.size(); h++){
+    
+    CharacterVector text = texts[h];
+    int len_text = text.size();
+    int len_skips = skips.size();
+    CharacterVector text_temp(len_text * len_skips);
+    int l = 0;
+    for (int i=0; i < len_text; i++){
+      //Rcout << "Now " << text[i] << " " << i << "\n";
+      String token = text[i];
+      bool is_in = set_types.find(token) != set_types.end();
+      if(is_in){
+        //Rcout << "Match " << text[i] << " " << i << "\n";
+        for (int j=0; j < len_skips; j++){
+          //Rcout << "Skip " << skips[j] << "\n";
+          int k = i + skips[j];
+          if(k < 0 || k > len_text - 1) break; // only within the length of text
+          
+          String token2 = text[k];
+          bool is_in2 = set_types.find(token2) != set_types.end();
+          if(is_in2) continue; //Skip target types
+          
+          if(k < i){
+            //Rcout << "Join left " << text[k] << " " << k << "\n";
+            text_temp[l] =  token2;
+            text_temp[l] += delim;
+            text_temp[l] += token;
+            l++;
+          }else if(i < k){
+            //Rcout << "Join right " << text[k] << " " << k << "\n";
+            text_temp[l] =  token;
+            text_temp[l] += delim;
+            text_temp[l] += token2;
+            l++;
+          }
+        }
+      }else{
+        text_temp[l] = token;
+        l++;
+      }
+    }
+    texts_temp[h] = text_temp[seq(0, l - 1)];
+  }
+  return texts_temp;
+}
