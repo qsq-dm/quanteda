@@ -7,6 +7,7 @@
 #' negation <- c(negation, 'never', 'not')
 #' toks2 <- bigramsSelective(toks, negation)
 #' head(toks2)
+#' head(toks)
 #' 
 #' @export
 bigramsSelective <- function(x, target, skip=0:100, concatenator='_'){
