@@ -99,10 +99,10 @@ List skipgram_cppl2(SEXP x,
 
 // [[Rcpp::export]]
 List bigram_selective_cppl(SEXP x,
-                    const vector<string> &types,
-                    const vector<int> &skips, 
-                    const string &delim
-                    ) {
+                           const vector<string> &types,
+                           const vector<int> &skips, 
+                           const string &delim
+) {
   
   List texts(x);
   
