@@ -101,7 +101,8 @@ List skipgram_cppl2(SEXP x,
 List bigram_selective_cppl(SEXP x,
                            const vector<string> &types,
                            const vector<int> &skips, 
-                           const string &delim
+                           const string &delim,
+                           bool overwrite
 ) {
   
   List texts(x);
@@ -109,7 +110,7 @@ List bigram_selective_cppl(SEXP x,
   int len = texts.size();
   std::unordered_set<std::string> set_types (types.begin(), types.end());
   for (int h = 0; h < len; h++){
-    int i_match = -1;
+    
     CharacterVector text = texts[h];
     CharacterVector text_temp = clone(text);
     int len = text.size();
@@ -124,20 +125,29 @@ List bigram_selective_cppl(SEXP x,
         for (int j=0; j < len_skips; j++){
           //Rcout << "Skip " << skips[j] << "\n";
           k = i + skips[j];
-          if(k > len - 1 || k < 0) break;
+          if(k < 0 || k > len - 1) break; // only within the length of text
+          
+          String token2 = text[k];
+          bool is_in2 = set_types.find(token2) != set_types.end();
+          if(is_in2) continue; //Skip target types
+          
           if(k < i){
             //Rcout << "Join left " << text[k] << " " << k << "\n";
-            text_temp[k] = text[k];
+            text_temp[k] =  token2;
             text_temp[k] += delim;
-            text_temp[k] += text[i];
+            text_temp[k] += token;
           }else if(i < k){
             //Rcout << "Join right " << text[k] << " " << k << "\n";
-            text_temp[k] = text[i];
+            text_temp[k] =  token;
             text_temp[k] += delim;
-            text_temp[k] += text[k];
+            text_temp[k] += token2;
           }
         }
-        i = k;
+        if(overwrite){
+          i++;
+        }else{
+          i = k;  
+        }
       }else{
         i++;
       }

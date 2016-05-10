@@ -6,12 +6,16 @@
 #' negation <- stopwords()[81:98]
 #' negation <- c(negation, 'never', 'not', 'no')
 #' toks2 <- bigramsSelective(toks, negation)
-#' print(toks[17])
-#' print(toks2[17])
+#' print(toks[8240])
+#' print(toks2[8240])
+#' 
+#' toks3 <- bigramsSelective(toks, c('in', 'to', 'for', 'of'), -1)
+#' head(toks3)
+#' 
 #' 
 #' @export
-bigramsSelective <- function(x, target, skip=0:100, concatenator='_'){
+bigramsSelective <- function(x, features, skip=0:100, concatenator='_'){
 
-  bigram_selective_cppl(x, target, skip, concatenator)
+  bigram_selective_cppl(x, features, skip, concatenator, TRUE)
   
 }
