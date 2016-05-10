@@ -56,7 +56,8 @@ ngramsNew <- function(x, ...) {
 #' # performance benchmarking
 #' toks <- tokenize(inaugTexts, removePunct = TRUE)
 #' rbenchmark::benchmark(new = ngramsNew(toks, n = 1:4),
-#'                       old = ngrams(toks, n = 1:4),
+#'                       new2 = skipgram_cppl2(toks, 1:4, 1, '_'),
+#'                       #old = ngrams(toks, n = 1:4),
 #'                       replications = 2)
 #' ##   test replications elapsed relative user.self sys.self user.child sys.child
 #' ## 1  new            2   0.499    1.000     0.494    0.006      0.000     0.000
