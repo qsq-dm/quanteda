@@ -116,7 +116,7 @@ List bigram_selective_cppl(SEXP x,
     int len = text.size();
     int len_skips = skips.size();
     for (int i=0; i < len;){
-      Rcout << "Now " << text[i] << " " << i << "\n";
+      //Rcout << "Now " << text[i] << " " << i << "\n";
       bool is_in = set_types.find(text[i]) != set_types.end();
       if(is_in){
         int k;
@@ -125,11 +125,11 @@ List bigram_selective_cppl(SEXP x,
           k = i + skips[j];
           if(k < i){
             k = max(0, k);
-            Rcout << "Join left " << text[k] << " " << k << "\n";
+            //Rcout << "Join left " << text[k] << " " << k << "\n";
             text_temp[k] = text[k] + delim + text[i];
           }else if(i < k){
             k = min(k, len - 1);
-            Rcout << "Join right " << text[k] << " " << k << "\n";
+            //Rcout << "Join right " << text[k] << " " << k << "\n";
             text_temp[k] = text[i] + delim + text[k];
           }
         }
