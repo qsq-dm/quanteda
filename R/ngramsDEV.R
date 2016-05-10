@@ -74,9 +74,9 @@ ngramsNew.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
     }
 
     ngram_result <- c()
-    for (j in n) {
-        offset_tokens <- list(x[1:(length(x) - (j-1) - skip)])
-        for (i in 2:j)
+    for (current_n in n) {
+        offset_tokens <- list(x[1:(length(x) - (current_n-1) - skip)])
+        for (i in 2:current_n)
             ix <- seq(from=i+skip, length.out=length(offset_tokens[[1]]))
             offset_tokens <- c(
               offset_tokens, 
