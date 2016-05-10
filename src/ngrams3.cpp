@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 #include <string>
 #include <algorithm>
+// [[Rcpp::plugins(cpp11)]]
+#include <unordered_set>
 
 using namespace Rcpp;
 using namespace std;
@@ -48,8 +50,6 @@ void skip(const std::vector< string > &tokens,
     }
 }
 
-
-
 // [[Rcpp::export]]
 CharacterVector skipgram_cpp2(const vector < string > &tokens,
                               const vector < int > &ns, 
@@ -69,7 +69,7 @@ CharacterVector skipgram_cpp2(const vector < string > &tokens,
         int n = ns[g];
         vector< string > ngram(n);
         for (int start = 0; start < len_tokens - (n - 1); start++) {
-            skip(tokens, start, n, skips, ngram, ngrams, e, f); // Get ngrams as reference
+          skip(tokens, start, n, skips, ngram, ngrams, e, f); // Get ngrams as reference
         }
     }
     
@@ -95,4 +95,52 @@ List skipgram_cppl2(SEXP x,
     texts_skipgram[h] = skipgram_cpp2(texts[h], ns, skips, delim);
   }
   return texts_skipgram;
+}
+
+// [[Rcpp::export]]
+List bigram_selective_cppl(SEXP x,
+                    const vector<string> &types,
+                    const vector<int> &skips, 
+                    const string &delim
+                    ) {
+  
+  List texts(x);
+  int len = texts.size();
+  List texts_skipgram(len);
+  std::unordered_set<std::string> set_types (types.begin(), types.end());
+  for (int h = 0; h < len; h++){
+    int i_match = -1;
+    vector<string> text = texts[h];
+    vector<string> text_temp(text.size()); // make vector in the same length as original
+    int len = text.size();
+    int len_skips = skips.size();
+    for (int i=0; i < len;){
+      
+      bool is_in = set_types.find(text[i]) != set_types.end();
+      if(is_in){
+        int k;
+        Rcout << "Match " << text[i] << " " << i << "\n";
+        for (int j=0; j < len_skips; j++){
+          k = i + skips[j];
+          if(k < i){
+            k = max(0, k);
+            Rcout << "Join left " << text[k] << " " << k << "\n";
+            text_temp[k] = text[k] + delim + text[i];
+          }else if(i < k){
+            k = min(k, len - 1);
+            Rcout << "Join right " << text[k] << " " << k << "\n";
+            text_temp[k] = text[i] + delim + text[k];
+          }else if(i == k){
+            text_temp[k] = text[i];
+          }
+        }
+        i = k + 1;
+      }else{
+        text_temp[i] = text[i];
+        i++;
+      }
+    }
+    texts[h] = text_temp;
+  }
+  return texts;
 }
