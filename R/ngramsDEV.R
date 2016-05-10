@@ -73,14 +73,19 @@ ngramsNew.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
         return(x)
     }
 
-    if (!identical(skip, 0L)) stop("skip not yet implemented for ngramsNew()")
-    
     ngram_result <- c()
     for (j in n) {
-        offset_tokens <- list()
-        for (i in 1:j)
-            offset_tokens <- c(offset_tokens, list(x[i:(length(x) - (j-i))]))
-        ngram_result <- c(ngram_result, do.call("paste", c(offset_tokens, sep = concatenator)))
+        offset_tokens <- list(x[1:(length(x) - (j-1) - skip)])
+        for (i in 2:j)
+            ix <- seq(from=i+skip, length.out=length(offset_tokens[[1]]))
+            offset_tokens <- c(
+              offset_tokens, 
+               list(x[ix])
+            )
+        ngram_result <- c(
+          ngram_result, 
+          do.call("paste", c(offset_tokens, sep = concatenator))
+        )
     }
     ngram_result
 }
