@@ -5,7 +5,7 @@
 using namespace Rcpp;
 using namespace std;
 
-std::string join(std::vector< std::string > ngram, 
+String join(std::vector< std::string > ngram, 
                  std::string delim){
     if(ngram.size() == 0) return "";
     std::string token_ngram = ngram[0];
@@ -13,7 +13,9 @@ std::string join(std::vector< std::string > ngram,
     for (int i = 1; i < len_ngram; i++) {
         token_ngram = token_ngram + delim + ngram[i];
     }
-    return token_ngram;
+    String token_ngram_enc(token_ngram);
+    token_ngram_enc.set_encoding(CE_UTF8);
+    return token_ngram_enc;
 }
 
 
@@ -46,6 +48,8 @@ void skip(const std::vector< string > &tokens,
     }
 }
 
+
+
 // [[Rcpp::export]]
 CharacterVector skipgram_cpp2(const vector < string > &tokens,
                               const vector < int > &ns, 
@@ -76,6 +80,7 @@ CharacterVector skipgram_cpp2(const vector < string > &tokens,
     }
     return tokens_ngram;
 }
+
 
 // [[Rcpp::export]]
 List skipgram_cppl2(SEXP x, 
