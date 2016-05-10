@@ -4,10 +4,10 @@
 #' toks <- toLower(toks)
 #' 
 #' negation <- stopwords()[81:98]
-#' negation <- c(negation, 'never', 'not')
+#' negation <- c(negation, 'never', 'not', 'no')
 #' toks2 <- bigramsSelective(toks, negation)
-#' head(toks2)
-#' head(toks)
+#' print(toks[17])
+#' print(toks2[17])
 #' 
 #' @export
 bigramsSelective <- function(x, target, skip=0:100, concatenator='_'){
