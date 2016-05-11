@@ -6,6 +6,34 @@
 
 using namespace Rcpp;
 
+// skipgram_cpp2
+CharacterVector skipgram_cpp2(const vector < string >& tokens, const vector < int >& ns, const vector < int >& skips, const string& delim);
+RcppExport SEXP quanteda_skipgram_cpp2(SEXP tokensSEXP, SEXP nsSEXP, SEXP skipsSEXP, SEXP delimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const vector < string >& >::type tokens(tokensSEXP);
+    Rcpp::traits::input_parameter< const vector < int >& >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< const vector < int >& >::type skips(skipsSEXP);
+    Rcpp::traits::input_parameter< const string& >::type delim(delimSEXP);
+    __result = Rcpp::wrap(skipgram_cpp2(tokens, ns, skips, delim));
+    return __result;
+END_RCPP
+}
+// skipgram_cppl2
+List skipgram_cppl2(SEXP x, const vector < int >& ns, const vector < int >& skips, const string& delim);
+RcppExport SEXP quanteda_skipgram_cppl2(SEXP xSEXP, SEXP nsSEXP, SEXP skipsSEXP, SEXP delimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const vector < int >& >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< const vector < int >& >::type skips(skipsSEXP);
+    Rcpp::traits::input_parameter< const string& >::type delim(delimSEXP);
+    __result = Rcpp::wrap(skipgram_cppl2(x, ns, skips, delim));
+    return __result;
+END_RCPP
+}
 // skipgramcpp
 StringVector skipgramcpp(std::vector < std::string > tokens, std::vector < int > ns, std::vector < int > ks, std::string delim);
 RcppExport SEXP quanteda_skipgramcpp(SEXP tokensSEXP, SEXP nsSEXP, SEXP ksSEXP, SEXP delimSEXP) {
