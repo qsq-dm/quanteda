@@ -31,8 +31,9 @@
 #' ngrams2(LETTERS, n = 2)
 #' 
 #' microbenchmark::microbenchmark(
-#' ngrams(LETTERS, n = 2),
-#' ngrams2(LETTERS, n = 2)
+#' cpp=ngrams(LETTERS, n = 2),
+#' cpp2=ngrams2(LETTERS, n = 2),
+#' r=ngrams3(LETTERS, n = 2)
 #' )
 #' 
 #' ngrams(LETTERS, n = 2, skip = 1)
@@ -43,21 +44,41 @@
 #' ngrams2(LETTERS, n = c(2,3), skip = 0:1)
 #' 
 #' microbenchmark::microbenchmark(
-#' ngrams(LETTERS, n = c(2,3), skip = 0:1),
-#' ngrams2(LETTERS, n = c(2,3), skip = 0:1)
+#' cpp=ngrams(LETTERS, n = c(2,3), skip = 0:1),
+#' cpp2=ngrams2(LETTERS, n = c(2,3), skip = 0:1)
 #' )
+#' 
 #' tokens <- tokenize("the quick brown fox jumped over the lazy dog.", 
 #'                    removePunct = TRUE, simplify = TRUE)
 #' data(SOTUCorpus, package = "quantedaData")
 #' sents <- tokenize(SOTUCorpus, what='sentence', simplify = TRUE)
 #' tokens <- tokenize(sents, removePunct = TRUE)
+#' 
+#' microbenchmark::microbenchmark(
+#' cpp=ngrams(tokens, n = 3),
+#' cpp2=ngrams2(tokens, n = 3),
+#' r=ngrams3(tokens, n = 3),
+#' times=1)
+#' 
+#' 
+#' microbenchmark::microbenchmark(
+#' cpp=ngrams(tokens, n = 1:3),
+#' cpp2=ngrams2(tokens, n = 1:3),
+#' #r=ngrams3(tokens, n = 1:3), # error
+#' times=1)
+#' 
 #' ngrams(tokens, n = 1:3)
+#' ngrams2(tokens, n = 1:3)
 #' ngrams(tokens, n = c(2,4), concatenator = " ")
 #' ngrams(tokens, n = c(2,4), skip = 1, concatenator = " ")
 #' 
 #' # skipgrams
 ngrams2 <- function(x, ...) {
   UseMethod("ngrams2")
+}
+
+ngrams3 <- function(x, ...) {
+  UseMethod("ngrams3")
 }
 
 #' @rdname ngrams
@@ -75,6 +96,29 @@ ngrams2.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
     skipgram_cpp2(x, n, skip + 1, concatenator)
 }
 
+#' @export
+ngrams3.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
+  if (any(stringi::stri_detect_fixed(x, " ")) & concatenator != " ")
+    stop("whitespace detected: please tokenize() before using ngrams()")
+  if (length(x) < min(n)) return(NULL)
+  if (identical(n, 1)) {
+    if (!identical(n, 1))
+      warning("skip argument ignored for n = 1")
+    return(x)
+  }
+  
+  if (!identical(skip, 0L)) stop("skip not yet implemented for ngramsNew()")
+  
+  ngram_result <- c()
+  for (j in n) {
+    offset_tokens <- list()
+    for (i in 1:j)
+      offset_tokens <- c(offset_tokens, list(x[i:(length(x) - (j-i))]))
+    ngram_result <- c(ngram_result, do.call("paste", c(offset_tokens, sep = concatenator)))
+  }
+  ngram_result
+}
+
 
 #' @rdname ngrams
 #' @export
@@ -86,6 +130,17 @@ ngrams2.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...
     class(ngramsResult) <- c("tokenizedTexts", class(ngramsResult))
     attributes(ngramsResult) <- attributes(x)
     ngramsResult
+}
+
+#' @rdname ngrams
+#' @export
+ngrams3.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
+  ngramsResult <- lapply(x, ngrams3.character, n, skip, concatenator)
+  # removed mclapply because not faster
+  # ngramsResult <- parallel::mclapply(x, ngrams.character, n, skip, concatenator, ...)
+  class(ngramsResult) <- c("tokenizedTexts", class(ngramsResult))
+  attributes(ngramsResult) <- attributes(x)
+  ngramsResult
 }
 
 

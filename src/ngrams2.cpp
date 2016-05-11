@@ -77,10 +77,14 @@ CharacterVector skipgram_cpp2(const std::vector <std::string> &tokens,
     
     // Join elements of ngrams
     CharacterVector tokens_ngram(f);
-    for (int k = 0; k < f; k++) {
-        tokens_ngram[k] = join2(ngrams[k], delim);
+    if(f > 0){
+      for (int k = 0; k < f; k++) {
+          tokens_ngram[k] = join2(ngrams[k], delim);
+      }
+      return tokens_ngram[seq(0, f - 1)];
+    }else{
+      return tokens_ngram;
     }
-    return tokens_ngram[seq(0, f - 1)];
 }
 
 /*** R
