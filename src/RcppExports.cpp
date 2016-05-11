@@ -6,31 +6,65 @@
 
 using namespace Rcpp;
 
+// skip
+void skip(const std::vector<std::string>& tokens, const unsigned int start, const unsigned int n, const std::vector<int> skips, std::vector<std::string> ngram, std::vector< std::vector<std::string> >& ngrams, int e, int& f);
+RcppExport SEXP quanteda_skip(SEXP tokensSEXP, SEXP startSEXP, SEXP nSEXP, SEXP skipsSEXP, SEXP ngramSEXP, SEXP ngramsSEXP, SEXP eSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type tokens(tokensSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type start(startSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const std::vector<int> >::type skips(skipsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type ngram(ngramSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::vector<std::string> >& >::type ngrams(ngramsSEXP);
+    Rcpp::traits::input_parameter< int >::type e(eSEXP);
+    Rcpp::traits::input_parameter< int& >::type f(fSEXP);
+    skip(tokens, start, n, skips, ngram, ngrams, e, f);
+    return R_NilValue;
+END_RCPP
+}
 // skipgram_cpp2
-CharacterVector skipgram_cpp2(const vector < string >& tokens, const vector < int >& ns, const vector < int >& skips, const string& delim);
+CharacterVector skipgram_cpp2(const std::vector <std::string>& tokens, const std::vector <int>& ns, const std::vector <int>& skips, const std::string& delim);
 RcppExport SEXP quanteda_skipgram_cpp2(SEXP tokensSEXP, SEXP nsSEXP, SEXP skipsSEXP, SEXP delimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const vector < string >& >::type tokens(tokensSEXP);
-    Rcpp::traits::input_parameter< const vector < int >& >::type ns(nsSEXP);
-    Rcpp::traits::input_parameter< const vector < int >& >::type skips(skipsSEXP);
-    Rcpp::traits::input_parameter< const string& >::type delim(delimSEXP);
+    Rcpp::traits::input_parameter< const std::vector <std::string>& >::type tokens(tokensSEXP);
+    Rcpp::traits::input_parameter< const std::vector <int>& >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< const std::vector <int>& >::type skips(skipsSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type delim(delimSEXP);
     __result = Rcpp::wrap(skipgram_cpp2(tokens, ns, skips, delim));
     return __result;
 END_RCPP
 }
 // skipgram_cppl2
-List skipgram_cppl2(SEXP x, const vector < int >& ns, const vector < int >& skips, const string& delim);
+List skipgram_cppl2(SEXP x, const std::vector <int>& ns, const std::vector <int>& skips, const std::string& delim);
 RcppExport SEXP quanteda_skipgram_cppl2(SEXP xSEXP, SEXP nsSEXP, SEXP skipsSEXP, SEXP delimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const vector < int >& >::type ns(nsSEXP);
-    Rcpp::traits::input_parameter< const vector < int >& >::type skips(skipsSEXP);
-    Rcpp::traits::input_parameter< const string& >::type delim(delimSEXP);
+    Rcpp::traits::input_parameter< const std::vector <int>& >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< const std::vector <int>& >::type skips(skipsSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type delim(delimSEXP);
     __result = Rcpp::wrap(skipgram_cppl2(x, ns, skips, delim));
+    return __result;
+END_RCPP
+}
+// bigram_selective_cppl
+List bigram_selective_cppl(SEXP x, const std::vector<std::string>& types, const std::vector<std::string>& types_stop, const std::vector<std::string>& types_ignore, const std::vector<int>& skips, const std::string& delim, const std::string& token_sub);
+RcppExport SEXP quanteda_bigram_selective_cppl(SEXP xSEXP, SEXP typesSEXP, SEXP types_stopSEXP, SEXP types_ignoreSEXP, SEXP skipsSEXP, SEXP delimSEXP, SEXP token_subSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type types(typesSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type types_stop(types_stopSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type types_ignore(types_ignoreSEXP);
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type skips(skipsSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type delim(delimSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type token_sub(token_subSEXP);
+    __result = Rcpp::wrap(bigram_selective_cppl(x, types, types_stop, types_ignore, skips, delim, token_sub));
     return __result;
 END_RCPP
 }

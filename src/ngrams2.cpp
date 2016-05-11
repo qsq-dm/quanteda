@@ -5,15 +5,13 @@
 #include <unordered_set>
 
 using namespace Rcpp;
-using namespace std;
 
-String join(std::vector< std::string > ngram, 
-                 std::string delim){
+String join2(std::vector< std::string > ngram, 
+             std::string delim){
     if(ngram.size() == 0) return "";
     String token_ngram = ngram[0];
     int len_ngram = ngram.size();
     for (int i = 1; i < len_ngram; i++) {
-        token_ngram += token_ngram;
         token_ngram += delim;
         token_ngram += ngram[i];
     }
@@ -21,13 +19,13 @@ String join(std::vector< std::string > ngram,
     return token_ngram;
 }
 
-
-void skip(const std::vector< string > &tokens,
+// [[Rcpp::export]]
+void skip(const std::vector<std::string> &tokens,
           const unsigned int start,
           const unsigned int n, 
-          const std::vector< int > skips,
-          std::vector< string > ngram,
-          std::vector< vector<string> > &ngrams,
+          const std::vector<int> skips,
+          std::vector<std::string> ngram,
+          std::vector< std::vector<std::string> > &ngrams,
           int e, int &f
 ){
     
@@ -39,23 +37,26 @@ void skip(const std::vector< string > &tokens,
     if(e < n){
         for (int j = 0; j < skips.size(); j++){
             int next = start + skips[j];
-            if(next > tokens.size() - 1) break;
+            if(next < 0 || tokens.size() - 1 < next) break;
+            //Rcout << "Join " << join2(ngram, "+").get_cstring() << " " << e << " " << next << "\n";
             skip(tokens, next, n, skips, ngram, ngrams, e, f);
         }
     }else{
-        //Rcout << "Add " << join(ngram, "+")<< " " << n << " " << e << "\n";
+        //Rcout << "Add " << join2(ngram, "+").get_cstring() << " " << f << "/" << ngrams.size() << "\n";
         ngrams[f] = ngram;
-        ngram.clear();
+        //ngram.clear();
         e = 0;
         f++;
     }
 }
 
+
+
 // [[Rcpp::export]]
-CharacterVector skipgram_cpp2(const vector < string > &tokens,
-                              const vector < int > &ns, 
-                              const vector < int > &skips, 
-                              const string &delim) {
+CharacterVector skipgram_cpp2(const std::vector <std::string> &tokens,
+                              const std::vector <int> &ns, 
+                              const std::vector <int> &skips, 
+                              const std::string &delim) {
     
     // Generate skipgrams recursively
     int len_ns = ns.size();
@@ -63,12 +64,12 @@ CharacterVector skipgram_cpp2(const vector < string > &tokens,
     int len_tokens = tokens.size();
     int e = 0; // Local index for tokens in ngram
     int f = 0; // Global index for ngrams 
-    vector< vector<string> > ngrams(len_ns * len_tokens * len_skips); // For the recursive function
-    
+    std::vector< std::vector<std::string> > ngrams(std::pow(len_ns * len_tokens, len_skips)); // For the recursive function
+    //Rcout << "Allocate " << ngrams.size() << "\n";
     
     for (int g = 0; g < len_ns; g++) {
         int n = ns[g];
-        vector< string > ngram(n);
+        std::vector<std::string> ngram(n);
         for (int start = 0; start < len_tokens - (n - 1); start++) {
           skip(tokens, start, n, skips, ngram, ngrams, e, f); // Get ngrams as reference
         }
@@ -77,17 +78,22 @@ CharacterVector skipgram_cpp2(const vector < string > &tokens,
     // Join elements of ngrams
     CharacterVector tokens_ngram(f);
     for (int k = 0; k < f; k++) {
-        tokens_ngram[k] = join(ngrams[k], delim);
+        tokens_ngram[k] = join2(ngrams[k], delim);
     }
-    return tokens_ngram;
+    return tokens_ngram[seq(0, f - 1)];
 }
+
+/*** R
+skipgram_cpp2(LETTERS, 1:2, 0:1, "_")
+
+*/
 
 
 // [[Rcpp::export]]
 List skipgram_cppl2(SEXP x, 
-                    const vector < int > &ns, 
-                    const vector < int > &skips, 
-                    const string &delim) {
+                    const std::vector <int> &ns, 
+                    const std::vector <int> &skips, 
+                    const std::string &delim) {
   
   List texts(x);
   int len = texts.size();
@@ -100,12 +106,12 @@ List skipgram_cppl2(SEXP x,
 
 // [[Rcpp::export]]
 List bigram_selective_cppl(SEXP x,
-                           const vector<string> &types,
-                           const vector<string> &types_stop,
-                           const vector<string> &types_ignore,
-                           const vector<int> &skips, 
-                           const string &delim,
-                           const string &token_sub
+                           const std::vector<std::string> &types,
+                           const std::vector<std::string> &types_stop,
+                           const std::vector<std::string> &types_ignore,
+                           const std::vector<int> &skips, 
+                           const std::string &delim,
+                           const std::string &token_sub
 ) {
   
   List texts(x);
