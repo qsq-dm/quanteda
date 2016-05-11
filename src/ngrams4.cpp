@@ -104,7 +104,8 @@ List bigram_selective_cppl(SEXP x,
                            const vector<string> &types_stop,
                            const vector<string> &types_ignore,
                            const vector<int> &skips, 
-                           const string &delim
+                           const string &delim,
+                           const string &token_sub
 ) {
   
   List texts(x);
@@ -123,6 +124,7 @@ List bigram_selective_cppl(SEXP x,
       //Rcout << "Now " << text[i] << " " << i << "\n";
       String token = text[i];
       bool is_in = set_types.find(token) != set_types.end();
+      if(token_sub != "") token = token_sub; // substitute by arbitary token
       if(is_in){
         int k;
         //Rcout << "Match " << text[i] << " " << i << "\n";
