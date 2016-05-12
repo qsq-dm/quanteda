@@ -31,9 +31,9 @@
 #' ngrams2(LETTERS, n = 2)
 #' 
 #' microbenchmark::microbenchmark(
-#' cpp=ngrams(LETTERS, n = 2),
-#' cpp2=ngrams2(LETTERS, n = 2),
-#' r=ngrams3(LETTERS, n = 2)
+#'  cpp=ngrams(LETTERS, n = 2),
+#'  cpp2=ngrams2(LETTERS, n = 2),
+#'  r=ngrams3(LETTERS, n = 2)
 #' )
 #' 
 #' ngrams(LETTERS, n = 2, skip = 1)
@@ -52,13 +52,16 @@
 #'                    removePunct = TRUE, simplify = TRUE)
 #' data(SOTUCorpus, package = "quantedaData")
 #' sents <- tokenize(SOTUCorpus, what='sentence', simplify = TRUE)
-#' tokens <- tokenize(sents, removePunct = TRUE)
+#' senttokens <- tokenize(sents, removePunct = TRUE)
+#' tokens <- tokenize(SOTUCorpus, removePunct = TRUE)
 #' 
 #' microbenchmark::microbenchmark(
-#' cpp=ngrams(tokens, n = 3),
-#' cpp2=ngrams2(tokens, n = 3),
-#' r=ngrams3(tokens, n = 3),
-#' times=1)
+#' # cpp=ngrams(tokens, n = 3),
+#'    cpp2sent = ngrams2(senttokens, n = 3),
+#'    cpp2words = ngrams2(tokens, n = 3),
+#'    rsent = ngrams3(senttokens, n = 3),
+#'    rwords = ngrams3(tokens, n = 3),
+#'    times = 10, unit = "relative")
 #' 
 #' 
 #' microbenchmark::microbenchmark(
@@ -77,11 +80,16 @@ ngrams2 <- function(x, ...) {
   UseMethod("ngrams2")
 }
 
+#' Adam's method of ngrams with R
+#' 
+#' Prototype method for R
+#' @inheritParams ngrams2
+#' @export
 ngrams3 <- function(x, ...) {
   UseMethod("ngrams3")
 }
 
-#' @rdname ngrams
+#' @rdname ngrams2
 #' @importFrom stats complete.cases
 #' @export
 ngrams2.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
@@ -97,6 +105,7 @@ ngrams2.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
 }
 
 #' @export
+#' @rdname ngrams3
 ngrams3.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
   if (any(stringi::stri_detect_fixed(x, " ")) & concatenator != " ")
     stop("whitespace detected: please tokenize() before using ngrams()")
@@ -120,7 +129,7 @@ ngrams3.character <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
 }
 
 
-#' @rdname ngrams
+#' @rdname ngrams2
 #' @export
 ngrams2.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
     #ngramsResult <- lapply(x, ngrams.character, n, skip, concatenator)
@@ -132,7 +141,7 @@ ngrams2.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...
     ngramsResult
 }
 
-#' @rdname ngrams
+#' @rdname ngrams3
 #' @export
 ngrams3.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...) {
   ngramsResult <- lapply(x, ngrams3.character, n, skip, concatenator)
@@ -144,7 +153,7 @@ ngrams3.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...
 }
 
 
-#' @rdname ngrams
+#' @rdname ngrams2
 #' @details Normally, \code{\link{ngrams}} will be called through 
 #'   \code{\link{tokenize}}, but these functions are also exported in case a 
 #'   user wants to perform lower-level ngram construction on tokenized texts.
@@ -169,12 +178,12 @@ ngrams3.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_", ...
 #' skipgrams2(tokens, n = 3, skip = 0:2, concatenator = " ")   
 skipgrams2 <- function(x, ...) UseMethod("skipgrams")
 
-#' @rdname ngrams
+#' @rdname ngrams2
 #' @export
 skipgrams2.character <- function(x, n, skip, concatenator="_", ...)
     ngrams2.character(x, n, skip, concatenator)
 
-#' @rdname ngrams
+#' @rdname ngrams2
 #' @export
 skipgrams2.tokenizedTexts <- function(x, n, skip, concatenator="_", ...)
     ngrams2.tokenizedTexts(x, n, skip, concatenator, ...)

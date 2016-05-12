@@ -56,6 +56,7 @@ LazyData: TRUE
 VignetteBuilder: knitr
 Collate:
     'RcppExports.R'
+    'bigrams.R'
     'dictionaries.R'
     'corpus.R'
     'collocations.R'
@@ -71,7 +72,6 @@ Collate:
     'lexdiv.R'
     'ngrams.R'
     'ngrams2.R'
-    'bigrams.R'
     'ngramsDEV.R'
     'phrases.R'
     'plots.R'
