@@ -6,6 +6,20 @@
 
 using namespace Rcpp;
 
+// skipgramcpp
+StringVector skipgramcpp(std::vector < std::string > tokens, std::vector < int > ns, std::vector < int > ks, std::string delim);
+RcppExport SEXP quanteda_skipgramcpp(SEXP tokensSEXP, SEXP nsSEXP, SEXP ksSEXP, SEXP delimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector < std::string > >::type tokens(tokensSEXP);
+    Rcpp::traits::input_parameter< std::vector < int > >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< std::vector < int > >::type ks(ksSEXP);
+    Rcpp::traits::input_parameter< std::string >::type delim(delimSEXP);
+    __result = Rcpp::wrap(skipgramcpp(tokens, ns, ks, delim));
+    return __result;
+END_RCPP
+}
 // skip
 void skip(const std::vector<std::string>& tokens, const unsigned int start, const unsigned int n, const std::vector<int> skips, std::vector<std::string> ngram, std::vector< std::vector<std::string> >& ngrams, int e, int& f);
 RcppExport SEXP quanteda_skip(SEXP tokensSEXP, SEXP startSEXP, SEXP nSEXP, SEXP skipsSEXP, SEXP ngramSEXP, SEXP ngramsSEXP, SEXP eSEXP, SEXP fSEXP) {
@@ -65,20 +79,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::string& >::type delim(delimSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type token_sub(token_subSEXP);
     __result = Rcpp::wrap(bigram_selective_cppl(x, types, types_stop, types_ignore, skips, delim, token_sub));
-    return __result;
-END_RCPP
-}
-// skipgramcpp
-StringVector skipgramcpp(std::vector < std::string > tokens, std::vector < int > ns, std::vector < int > ks, std::string delim);
-RcppExport SEXP quanteda_skipgramcpp(SEXP tokensSEXP, SEXP nsSEXP, SEXP ksSEXP, SEXP delimSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< std::vector < std::string > >::type tokens(tokensSEXP);
-    Rcpp::traits::input_parameter< std::vector < int > >::type ns(nsSEXP);
-    Rcpp::traits::input_parameter< std::vector < int > >::type ks(ksSEXP);
-    Rcpp::traits::input_parameter< std::string >::type delim(delimSEXP);
-    __result = Rcpp::wrap(skipgramcpp(tokens, ns, ks, delim));
     return __result;
 END_RCPP
 }

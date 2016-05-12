@@ -1,3 +1,13 @@
+#' form bigrams for selected sequences
+#' 
+#' Some description here
+#' @param x input object
+#' @param features sequences to select
+#' @param stop something
+#' @param ignore something
+#' @param skip skips between words
+#' @param concatenator character for joining bigrams
+#' @param substitute something
 #' @examples
 #' data(SOTUCorpus, package = "quantedaData")
 #' toks <- tokenize(tokenize(SOTUCorpus, what='sentence', simplify = TRUE), 
