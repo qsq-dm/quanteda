@@ -70,6 +70,8 @@ Collate:
     'kwic.R'
     'lexdiv.R'
     'ngrams.R'
+    'ngrams2.R'
+    'bigrams.R'
     'ngramsDEV.R'
     'phrases.R'
     'plots.R'
@@ -93,3 +95,4 @@ Collate:
     'wordstem.R'
     'zzz.R'
 RoxygenNote: 5.0.1
+SystemRequirements: C++11
