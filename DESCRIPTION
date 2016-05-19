@@ -67,6 +67,7 @@ Collate:
     'dfm-methods.R'
     'dfm-weighting.R'
     'encoding.R'
+    'fcm.R'
     'kwic.R'
     'lexdiv.R'
     'ngrams.R'
