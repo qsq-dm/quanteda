@@ -74,7 +74,7 @@ selectFeatures2 <- function(x, ...) UseMethod("selectFeatures2")
 selectFeatures2.tokenizedTexts <- function(x, features, selection = c("keep", "remove"), 
                                           valuetype = c("glob", "regex", "fixed"),
                                           case_insensitive = TRUE, padding = FALSE, indexing = FALSE,
-                                          verbose = FALSE, ...) {
+                                          verbose = TRUE, ...) {
     selection <- match.arg(selection)
     valuetype <- match.arg(valuetype)
     originalvaluetype <- valuetype
