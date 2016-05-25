@@ -21,9 +21,9 @@ void index_cpp(Rcpp::List &texts,
   Rcout << "Assigning IDs\n";
   
   // Assign integer IDs
-  std::unordered_map<String, int> index(types.size());
+  std::unordered_map<String, int> indexx(types.size());
   for (int g = 0; g < types.size(); g++){
-    index[types[g]] = g + 1;
+    indexx[types[g]] = g + 1;
   }
   
   Rcout << "Converting to IDs\n";
@@ -35,7 +35,7 @@ void index_cpp(Rcpp::List &texts,
     for (int i = 0; i < tokens.size(); i++){
       //Rcout << "Token " <<  tokens[i] << "\n";
       index_d[k] = h + 1;
-      index_f[k] = index[tokens[i]];
+      index_f[k] = indexx[tokens[i]];
       k++;
     }
   }
