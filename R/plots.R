@@ -79,7 +79,7 @@ plot.dfm <- function(x, comparison = FALSE, ...) {
 #' g + aes(color=keyword) + scale_color_manual(values=c('red', 'blue'))
 #' }
 #' @export
-plot.kwic <- function(scale=c('relative', 'absolute'), ...) {
+plot.kwic <- function(..., scale=c('relative', 'absolute')) {
     if (!requireNamespace("ggplot2", quietly = TRUE))
         stop("You must have ggplot2 installed to make a dispersion plot.")
     if(!requireNamespace("grid", quietly = TRUE)) 
